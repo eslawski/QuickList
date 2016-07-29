@@ -20,7 +20,7 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     // Version of the database. Must increment this when schema is changed.
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     // Name of the database
     public static final String DATABASE_NAME = "tasksDB";

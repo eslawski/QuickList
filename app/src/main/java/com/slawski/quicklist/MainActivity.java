@@ -7,32 +7,41 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-public class MainActivity extends AppCompatActivity implements
-        android.app.LoaderManager.LoaderCallbacks<Cursor> {
+import java.util.List;
 
-    private SimpleCursorAdapter adapter;
+public class MainActivity extends AppCompatActivity {
+
     private static final int LOADER_ID = 42;
+    private ItemTouchHelper mItemTouchHelper;
+    private RecyclerListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
 
-        ListView taskListView = (ListView) findViewById(R.id.lvTasks);
-        taskListView.setNestedScrollingEnabled(true);
+        adapter = new RecyclerListAdapter(getAllTasks());
 
-        adapter = new SimpleCursorAdapter(this, R.layout.task_list_item, null,
-                new String[] { DatabaseHandler.KEY_TASK_DESCRIPTION },
-                new int[] {R.id.list_task_description}, 0);
-        taskListView.setAdapter(adapter);
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setNestedScrollingEnabled(true);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+        ItemTouchHelper.Callback callback = new ItemTouchCallbackHelper(adapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -53,7 +62,10 @@ public class MainActivity extends AppCompatActivity implements
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if(resultCode == RESULT_OK){
-                getLoaderManager().restartLoader(LOADER_ID, null, this);
+                // The new task has been added so retrieve all tasks again and refresh
+                // the adapter. The problem is that RecyclerViews cannot use a cursor
+                // adapter to plug directly into the database.
+                adapter.refreshAllTasks(getAllTasks());
             }
         }
     }
@@ -75,23 +87,12 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if(id != LOADER_ID) {
-            return null;
-        }
-        return new CursorLoader(MainActivity.this, TaskContentProvider.CONTENT_URI,
-                new String[] {DatabaseHandler.KEY_TASK_DESCRIPTION },
-                null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        adapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.swapCursor(null);
+    /**
+     * This method is not ideal. It queries the database for all the tasks and updates the private
+     * variable. TODO - rethink this
+     */
+    public List<Task> getAllTasks() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        return db.getAllTasks();
     }
 }

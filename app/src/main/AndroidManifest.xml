@@ -22,11 +22,6 @@
             android:name=".AddTaskActivity"
             android:windowSoftInputMode="adjustPan">
         </activity>
-
-        <provider
-            android:name=".TaskContentProvider"
-            android:authorities="com.slawski.quicklist.provider.TaskContentProvider"
-            android:exported="false" />
     </application>
 
 </manifest>
