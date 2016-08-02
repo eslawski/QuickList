@@ -4,8 +4,10 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,10 +32,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
 
-        adapter = new RecyclerListAdapter(this, getAllTasks());
+        // Convert all Tasks to TaskWrappers
+        List<TaskWrapper> taskWrappers = new ArrayList<>();
+        for(Task task : getAllTasks()) {
+            taskWrappers.add(new TaskWrapper(task));
+        }
+
+        adapter = new RecyclerListAdapter(this, taskWrappers);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setNestedScrollingEnabled(true);
+        Drawable divider = ContextCompat.getDrawable(getApplicationContext(), R.drawable.up_arrow);
+        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
@@ -56,6 +68,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void onResume() {
+        super.onResume();
+        //adapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -64,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
                 // The new task has been added so retrieve all tasks again and refresh
                 // the adapter. The problem is that RecyclerViews cannot use a cursor
                 // adapter to plug directly into the database.
-                adapter.refreshAllTasks(getAllTasks());
+//                adapter.refreshAllTasks(getAllTasks());
+                adapter.addTask(data.getExtras().getString("task"));
             }
         }
     }

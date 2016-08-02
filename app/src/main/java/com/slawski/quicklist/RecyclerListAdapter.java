@@ -1,10 +1,9 @@
 package com.slawski.quicklist;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Adapter for our recycler view to display tasks.
+ * Adapter for our recycler view to display tasksWrappers.
  */
 public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapter.ItemViewHolder>
         implements ItemTouchHelperAdapter {
 
-    // Private variable that stores all the tasks to be displayed.
-    private List<Task> tasks = new ArrayList<>();
+    // Private variable that stores all the tasksWrappers to be displayed.
+    private List<TaskWrapper> tasksWrappers = new ArrayList<>();
     private final HashMap<Integer, Integer> originalVotes = new HashMap<>();
 
     // Stores the context for database purposes. Not the best solution here because the adapter
@@ -32,14 +31,10 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
 
     /**
      * Constructor
-     * @param tasks
      */
-    RecyclerListAdapter(Context context, List<Task> tasks) {
-        this.tasks = tasks;
+    RecyclerListAdapter(Context context, List<TaskWrapper> taskWrappers) {
+        this.tasksWrappers = taskWrappers;
         this.context = context;
-        for(Task task : tasks) {
-            this.originalVotes.put(task.getID(), task.getVotes());
-        }
     }
 
     /**
@@ -69,12 +64,13 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
      */
     @Override
     public void onItemDismiss(int position) {
-        //TODO somehow figure out how to delete tasks from the actual database.
+        //TODO somehow figure out how to delete tasksWrappers from the actual database.
         DatabaseHandler db = new DatabaseHandler(context);
-        db.deleteTask(tasks.get(position));
-        tasks.remove(position);
+        db.deleteTask(tasksWrappers.get(position).getTask());
+        tasksWrappers.remove(position);
         this.originalVotes.remove(position);
         notifyItemRemoved(position);
+        //notifyDataSetChanged();
     }
 
     /**
@@ -97,8 +93,29 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
      */
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        holder.textView.setText(tasks.get(position).getTaskDescription());
-        holder.voteCountTextView.setText(String.valueOf(tasks.get(position).getVotes()));
+        TaskWrapper taskWrapper = tasksWrappers.get(position);
+        Task task = taskWrapper.getTask();
+
+        holder.textView.setText(task.getTaskDescription());
+        holder.voteCountTextView.setText(String.valueOf(task.getVotes()));
+
+        Drawable upvoteDrawable = holder.upvote.getDrawable().mutate();
+        Drawable downvoteDrawable = holder.downvote.getDrawable().mutate();
+
+        if(taskWrapper.getIsUpvoted()) {
+            upvoteDrawable.setColorFilter(Color.parseColor("#FF8B60"), PorterDuff.Mode.MULTIPLY);
+            downvoteDrawable.setColorFilter(null);
+        } else if(taskWrapper.getIsDownvoted()) {
+            downvoteDrawable.setColorFilter(Color.parseColor("#9494ff"), PorterDuff.Mode.MULTIPLY);
+            upvoteDrawable.setColorFilter(null);
+        } else {
+            upvoteDrawable.setColorFilter(null);
+            downvoteDrawable.setColorFilter(null);
+        }
+
+        holder.upvote.setImageDrawable(upvoteDrawable);
+        holder.downvote.setImageDrawable(downvoteDrawable);
+
     }
 
     /**
@@ -107,19 +124,16 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
      */
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return tasksWrappers.size();
     }
 
-    /**
-     * Refreshes all the tasks in the adapter
-     */
-    public void refreshAllTasks(List<Task> tasks) {
-        this.tasks = tasks;
-        this.originalVotes.clear();
-        for(Task task : tasks) {
-            this.originalVotes.put(task.getID(), task.getVotes());
-        }
-        notifyDataSetChanged();
+    public void addTask(String taskDescription) {
+        DatabaseHandler db = new DatabaseHandler(context);
+        int nextRecordId = db.getRecordId()+1;
+        Task newTask = new Task(nextRecordId, taskDescription, 0);
+        db.addTask(newTask);
+        this.tasksWrappers.add(new TaskWrapper(newTask));
+        notifyItemInserted(this.tasksWrappers.size()-1);
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder implements
@@ -142,9 +156,9 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             upvote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Task task = tasks.get(getAdapterPosition());
-                    updateTask(view.getContext(), new Task(task.getID(), task.getTaskDescription(),
-                            task.getVotes()+1));
+                    TaskWrapper taskWrapper = tasksWrappers.get(getAdapterPosition());
+                    taskWrapper.upVote();
+                    updateTask(view.getContext(), taskWrapper);
 
                 }
             });
@@ -152,9 +166,9 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             downvote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Task task = tasks.get(getAdapterPosition());
-                    updateTask(view.getContext(), new Task(task.getID(), task.getTaskDescription(),
-                            task.getVotes()-1));
+                    TaskWrapper taskWrapper = tasksWrappers.get(getAdapterPosition());
+                    taskWrapper.downVote();
+                    updateTask(view.getContext(), taskWrapper);
                 }
             });
         }
@@ -169,22 +183,13 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             itemView.setBackgroundColor(0);
         }
 
-        private void updateTask(Context context, Task task) {
+        private void updateTask(Context context, TaskWrapper taskWrapper) {
             DatabaseHandler db = new DatabaseHandler(context);
+            Task task = taskWrapper.getTask();
             db.updateTask(task);
             voteCountTextView.setText(String.valueOf(task.getVotes()));
-            tasks.set(getAdapterPosition(), task);
+            tasksWrappers.set(getAdapterPosition(), taskWrapper);
 
-            if(task.getVotes() > originalVotes.get(task.getID())) {
-                upvote.getDrawable().setColorFilter(Color.parseColor("#FF8B60"), PorterDuff.Mode.MULTIPLY);
-                downvote.getDrawable().setColorFilter(null);
-            } else if(task.getVotes() < originalVotes.get(task.getID())) {
-                downvote.getDrawable().setColorFilter(Color.parseColor("#9494ff"), PorterDuff.Mode.MULTIPLY);
-                upvote.getDrawable().setColorFilter(null);
-            } else {
-                downvote.getDrawable().setColorFilter(null);
-                upvote.getDrawable().setColorFilter(null);
-            }
             notifyItemChanged(getAdapterPosition());
         }
     }

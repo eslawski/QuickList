@@ -20,16 +20,17 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     // Version of the database. Must increment this when schema is changed.
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     // Name of the database
     public static final String DATABASE_NAME = "tasksDB";
 
     // Name of the one and only table (so far) in the database.
     public static final String TABLE_TASKS = "tasks";
+    public static final String TABLE_RECORD_ID = "recordId";
 
     // Column names
-    public static final String KEY_ID = "_id";
+    public static final String KEY_ID = "_id"; //doubles as column in record id table
     public static final String KEY_TASK_DESCRIPTION = "taskDescription";
     public static final String KEY_VOTES = "votes";
 
@@ -44,9 +45,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTasksTable = "CREATE TABLE " + TABLE_TASKS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_TASK_DESCRIPTION
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_TASK_DESCRIPTION
                 + " TEXT," + KEY_VOTES + " INTEGER" + ")";
+
+        String createRecordTable = "CREATE TABLE " + TABLE_RECORD_ID + "("
+                + KEY_ID + " INTEGER PRIMARY KEY)";
+
         db.execSQL(createTasksTable);
+        db.execSQL(createRecordTable);
+
+        // Insert the first value in the record id table
+        ContentValues values = new ContentValues();
+        values.put(KEY_ID, 0);
+        db.insert(TABLE_RECORD_ID, null, values);
     }
 
     /**
@@ -61,6 +72,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public int getRecordId() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT MAX(" + KEY_ID + ") as id FROM " + TABLE_RECORD_ID;
+        Cursor cursor = db.rawQuery(query, null);
+        int recordId = 0;
+        if(cursor != null){
+            cursor.moveToFirst();
+            recordId = cursor.getInt(0);
+            cursor.close();
+        }
+
+        db.close();
+        return recordId;
+    }
+
     /**
      * Adds a new task to the TASKS table of the database.
      * @param task The task to add.
@@ -70,10 +96,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Create the ContentValues that will be passed to the insert method.
         ContentValues values = new ContentValues();
+        values.put(KEY_ID, task.getID());
         values.put(KEY_TASK_DESCRIPTION, task.getTaskDescription());
         values.put(KEY_VOTES, task.getVotes());
 
         db.insert(TABLE_TASKS, null, values);
+
+        // Increment the record id
+        ContentValues values1 = new ContentValues();
+        values1.put(KEY_ID, task.getID()+1);
+        db.update(TABLE_RECORD_ID, values1, null, null);
+
         db.close();
     }
 

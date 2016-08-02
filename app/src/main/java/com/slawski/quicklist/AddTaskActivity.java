@@ -66,8 +66,8 @@ public class AddTaskActivity extends AppCompatActivity {
             //TODO 3) send back the result of add task so it can be appended to the adapter
             //TODO 4) figure out a better way to create ids
             EditText taskDescription = (EditText) findViewById(R.id.taskDescriptionField);
-            db.addTask(new Task(taskDescription.getText().toString(), 0));
             Intent i = new Intent();
+            i.putExtra("task", taskDescription.getText().toString());
             setResult(RESULT_OK, i);
             finish();
         }
