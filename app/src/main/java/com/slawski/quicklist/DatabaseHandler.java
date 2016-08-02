@@ -145,8 +145,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @param task The task to update
      */
     public int updateTask(Task task){
-        //TODO: implement
-        return 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_ID, task.getID());
+        values.put(KEY_TASK_DESCRIPTION, task.getTaskDescription());
+        values.put(KEY_VOTES, task.getVotes());
+
+        return db.update(TABLE_TASKS, values, KEY_ID + " = ?",
+                new String[] {String.valueOf(task.getID())});
     }
 
     /**

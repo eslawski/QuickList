@@ -21,7 +21,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int LOADER_ID = 42;
     private ItemTouchHelper mItemTouchHelper;
     private RecyclerListAdapter adapter;
 
