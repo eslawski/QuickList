@@ -16,6 +16,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -42,13 +43,12 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setNestedScrollingEnabled(true);
-        Drawable divider = ContextCompat.getDrawable(getApplicationContext(), R.drawable.up_arrow);
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-
-        ItemTouchHelper.Callback callback = new ItemTouchCallbackHelper(adapter);
+        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.swipe_bg);
+        ItemTouchHelper.Callback callback = new ItemTouchCallbackHelper(adapter, frameLayout);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);
 

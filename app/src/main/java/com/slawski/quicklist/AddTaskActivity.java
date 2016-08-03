@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -51,6 +52,11 @@ public class AddTaskActivity extends AppCompatActivity {
                 }
             }
         });
+
+        EditText taskDescription =(EditText) findViewById(R.id.taskDescriptionField);
+        if(taskDescription.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
 
     }
 

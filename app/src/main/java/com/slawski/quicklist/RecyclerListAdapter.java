@@ -175,12 +175,14 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundColor(Color.LTGRAY);
+            // Used for indicating which row is selected
+            //itemView.setBackgroundColor(Color.LTGRAY);
         }
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor(0);
+            // Used for indicating the last attempted cleared item
+            //itemView.setBackgroundColor(0);
         }
 
         private void updateTask(Context context, TaskWrapper taskWrapper) {
