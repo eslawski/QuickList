@@ -1,5 +1,7 @@
 package com.slawski.quicklist;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -12,6 +14,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +27,6 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
 
     // Private variable that stores all the tasksWrappers to be displayed.
     private List<TaskWrapper> tasksWrappers = new ArrayList<>();
-    private final HashMap<Integer, Integer> originalVotes = new HashMap<>();
 
     // Stores the context for database purposes. Not the best solution here because the adapter
     // should not be manipulating the data.
@@ -68,9 +71,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         DatabaseHandler db = new DatabaseHandler(context);
         db.deleteTask(tasksWrappers.get(position).getTask());
         tasksWrappers.remove(position);
-        this.originalVotes.remove(position);
         notifyItemRemoved(position);
-        //notifyDataSetChanged();
     }
 
     /**
@@ -116,6 +117,15 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         holder.upvote.setImageDrawable(upvoteDrawable);
         holder.downvote.setImageDrawable(downvoteDrawable);
 
+    }
+
+    public void sortTasks() {
+        Collections.sort(tasksWrappers, new Comparator<TaskWrapper>() {
+            public int compare(TaskWrapper taskWrapper1, TaskWrapper taskWrapper2) {
+                return taskWrapper2.getTask().getVotes() - taskWrapper1.getTask().getVotes();
+            }
+        });
+        notifyDataSetChanged();
     }
 
     /**
@@ -167,8 +177,12 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
                 @Override
                 public void onClick(View view) {
                     TaskWrapper taskWrapper = tasksWrappers.get(getAdapterPosition());
-                    taskWrapper.downVote();
-                    updateTask(view.getContext(), taskWrapper);
+                    // Do not allow down-voting below 0
+                    if(taskWrapper.getTask().getVotes() > 0) {
+                        taskWrapper.downVote();
+                        updateTask(view.getContext(), taskWrapper);
+                    }
+
                 }
             });
         }
@@ -191,7 +205,6 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             db.updateTask(task);
             voteCountTextView.setText(String.valueOf(task.getVotes()));
             tasksWrappers.set(getAdapterPosition(), taskWrapper);
-
             notifyItemChanged(getAdapterPosition());
         }
     }

@@ -41,7 +41,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/plus_button"
-        android:layout_gravity="bottom|end" />
+        android:layout_gravity="bottom|end"
+        app:layout_behavior="com.slawski.quicklist.ScrollAwareFABBehavior"/>
 
 
 

@@ -13,7 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/swipe_bg"
-        android:background="#cee3f8">
+        android:background="#cee3f8"
+        android:visibility="gone">
 
         <ImageView
         android:layout_width="64dp"
@@ -37,6 +38,13 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_gravity="bottom">
+
+    </LinearLayout>
 
 
 
