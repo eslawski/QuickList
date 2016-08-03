@@ -4,14 +4,10 @@ package com.slawski.quicklist;
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-/**
- * Followed this tutorial:
- * http://androidessence.com/hide-the-floatingactionbutton-when-scrolling-a-recyclerview/
- */
+
 public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
 
     public ScrollAwareFABBehavior(Context context, AttributeSet attrs) {
@@ -20,15 +16,28 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes) {
-        return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL;
+        return true;
     }
 
     @Override
-    public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-        if(dyConsumed > 0 && child.getVisibility() == View.VISIBLE){
+    public void onNestedScroll(CoordinatorLayout coordinatorLayout,
+                               FloatingActionButton child, View target, int dxConsumed,
+                               int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+        // TODO Auto-generated method stub
+        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed,
+                dxUnconsumed, dyUnconsumed);
+        // dyUnconsumed is the "amount of scroll" that went to waste because we have already
+        // scrolled to the bottom. I chose 50 as an arbitrary number as it seems to be a reasonable
+        // amount of overscroll required to hide the floating action button
+        if (child.getVisibility() == View.VISIBLE && dyUnconsumed > 50) {
             child.hide();
-        } else if(dyConsumed < 0 && child.getVisibility() == View.GONE){
+        }
+    }
+
+    @Override
+    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target) {
+        super.onStopNestedScroll(coordinatorLayout, child, target);
+        if (child.getVisibility() == View.GONE) {
             child.show();
         }
     }
