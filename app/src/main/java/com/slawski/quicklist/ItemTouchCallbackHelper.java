@@ -6,12 +6,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 public class ItemTouchCallbackHelper extends ItemTouchHelper.Callback {
 
-    private final ItemTouchHelperAdapter mAdapter;
+    private final RecyclerListAdapter mAdapter;
     FrameLayout frameLayout;
 
     /**
@@ -19,7 +20,7 @@ public class ItemTouchCallbackHelper extends ItemTouchHelper.Callback {
      * @param adapter
      */
     public ItemTouchCallbackHelper(
-            ItemTouchHelperAdapter adapter, FrameLayout frameLayout) {
+            RecyclerListAdapter adapter, FrameLayout frameLayout) {
         mAdapter = adapter;
         this.frameLayout = frameLayout;
     }
@@ -56,13 +57,27 @@ public class ItemTouchCallbackHelper extends ItemTouchHelper.Callback {
         if(isCurrentlyActive) {
             frameLayout.setVisibility(View.VISIBLE);
         }else{
-            frameLayout.setVisibility(View.GONE);
+            // This will immediately hide the background as soon as you let go. A litte more stable
+            // but doesn't look as cool.
+            //frameLayout.setVisibility(View.GONE);
         }
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        // Give the background a second to dismiss. Not quite the best way to do this. Once or twice
+        // I have seen an issue with the item dividers overlapping the background. An easy way might
+        // be to remove the borders. Otherwise this animation placement needs to be reworked.
+        int duration = 1000;
+        if(viewHolder.getAdapterPosition() == mAdapter.getItemCount()-1) {
+            // Shorter duration for the last item in the list
+            duration = 100;
+        }
+        TranslateAnimation animate = new TranslateAnimation(0,0,0,0);
+        animate.setDuration(duration);
+        frameLayout.startAnimation(animate);
+        frameLayout.setVisibility(View.GONE);
         mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 
