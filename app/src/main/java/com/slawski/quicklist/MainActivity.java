@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
             taskWrappers.add(new TaskWrapper(task));
         }
 
-        adapter = new RecyclerListAdapter(this, taskWrappers);
+        FrameLayout background = (FrameLayout) findViewById(R.id.swipe_bg);
+        adapter = new RecyclerListAdapter(this, taskWrappers, background);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setNestedScrollingEnabled(true);

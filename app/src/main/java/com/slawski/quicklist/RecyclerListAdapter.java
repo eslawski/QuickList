@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -32,12 +33,16 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     // should not be manipulating the data.
     private Context context;
 
+    // Reference to the background that displays behinds swipe tasks.
+    private FrameLayout background;
+
     /**
      * Constructor
      */
-    RecyclerListAdapter(Context context, List<TaskWrapper> taskWrappers) {
+    RecyclerListAdapter(Context context, List<TaskWrapper> taskWrappers, FrameLayout background) {
         this.tasksWrappers = taskWrappers;
         this.context = context;
+        this.background = background;
     }
 
     /**
@@ -102,6 +107,13 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
 
         Drawable upvoteDrawable = holder.upvote.getDrawable().mutate();
         Drawable downvoteDrawable = holder.downvote.getDrawable().mutate();
+
+        // Sometimes if a swipe is not fully completed it will leave the 'thumbs up' background
+        // drawn behind the list. Then when the upvote/downvote button is clicked the list item is
+        // redrawn which briefly shows the underlying 'thumbs up' background. This is a poor hack
+        // to get the background to disappear right before the list item is redrawn.
+        // TODO: Find a better way to listen for cancel swipes and handle this in the ItemTouchCallbackHelper
+        background.setVisibility(View.GONE);
 
         if(taskWrapper.getIsUpvoted()) {
             upvoteDrawable.setColorFilter(Color.parseColor("#FF8B60"), PorterDuff.Mode.MULTIPLY);

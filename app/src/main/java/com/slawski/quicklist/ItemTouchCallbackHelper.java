@@ -56,8 +56,8 @@ public class ItemTouchCallbackHelper extends ItemTouchHelper.Callback {
         frameLayout.setLayoutParams(new FrameLayout.LayoutParams(itemView.getWidth(), itemView.getHeight()));
         if(isCurrentlyActive) {
             frameLayout.setVisibility(View.VISIBLE);
-        }else{
-            // This will immediately hide the background as soon as you let go. A litte more stable
+        } else {
+            // This will immediately hide the background as soon as you let go. A little more stable
             // but doesn't look as cool.
             //frameLayout.setVisibility(View.GONE);
         }
@@ -66,13 +66,11 @@ public class ItemTouchCallbackHelper extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        // Give the background a second to dismiss. Not quite the best way to do this. Once or twice
-        // I have seen an issue with the item dividers overlapping the background. An easy way might
-        // be to remove the borders. Otherwise this animation placement needs to be reworked.
+        // Give the background a second to dismiss. Not quite the best way to do this.
         int duration = 1000;
         if(viewHolder.getAdapterPosition() == mAdapter.getItemCount()-1) {
             // Shorter duration for the last item in the list
-            duration = 100;
+            duration = 400;
         }
         TranslateAnimation animate = new TranslateAnimation(0,0,0,0);
         animate.setDuration(duration);
