@@ -46,36 +46,31 @@ public class ItemTouchCallbackHelper extends ItemTouchHelper.Callback {
     }
 
     /**
-     * Add the "leave behind" effect
+     *
+     * @param c
+     * @param recyclerView
+     * @param viewHolder
+     * @param dX
+     * @param dY
+     * @param actionState
+     * @param isCurrentlyActive (Boolean) Indicates if the view is currently being touched.
      */
     @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
         View itemView = viewHolder.itemView;
-        frameLayout.setY(itemView.getTop());
-        frameLayout.setX(0);
-        frameLayout.setLayoutParams(new FrameLayout.LayoutParams(itemView.getWidth(), itemView.getHeight()));
         if(isCurrentlyActive) {
-            frameLayout.setVisibility(View.VISIBLE);
-        } else {
-            // This will immediately hide the background as soon as you let go. A little more stable
-            // but doesn't look as cool.
-            //frameLayout.setVisibility(View.GONE);
+            mAdapter.displaySwipeBackground(itemView.getTop(), itemView.getWidth(), itemView.getHeight());
         }
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
+    /**
+     * Called when an item is swiped off of the screen.
+     * @param viewHolder
+     * @param direction
+     */
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        // Give the background a second to dismiss. Not quite the best way to do this.
-        int duration = 1000;
-        if(viewHolder.getAdapterPosition() == mAdapter.getItemCount()-1) {
-            // Shorter duration for the last item in the list
-            duration = 400;
-        }
-        TranslateAnimation animate = new TranslateAnimation(0,0,0,0);
-        animate.setDuration(duration);
-        frameLayout.startAnimation(animate);
-        frameLayout.setVisibility(View.GONE);
         mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 

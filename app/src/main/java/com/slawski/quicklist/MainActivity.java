@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setNestedScrollingEnabled(true);
-        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(this);
-        recyclerView.addItemDecoration(dividerItemDecoration);
+//        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(this);
+//        recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.swipe_bg);

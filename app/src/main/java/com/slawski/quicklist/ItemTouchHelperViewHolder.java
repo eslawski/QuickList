@@ -1,5 +1,7 @@
 package com.slawski.quicklist;
 
+import android.view.View;
+
 /**
  * TODO doc
  */

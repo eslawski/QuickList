@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -72,11 +73,29 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
      */
     @Override
     public void onItemDismiss(int position) {
-        //TODO somehow figure out how to delete tasksWrappers from the actual database.
+        animateSwipeBackgroundOut(position);
         DatabaseHandler db = new DatabaseHandler(context);
         db.deleteTask(tasksWrappers.get(position).getTask());
         tasksWrappers.remove(position);
         notifyItemRemoved(position);
+    }
+
+    /**
+     * Allows the swipe background display for a short amount of time after and item is swiped.
+     * This adds a nice UI effect leaving the background behind as the list re-sizes itself.
+     * @param position
+     */
+    public void animateSwipeBackgroundOut(int position) {
+        // Give the background a second to dismiss. Not quite the best way to do this.
+        int duration = 1000;
+        if(position == this.getItemCount()-1) {
+            // Shorter duration for the last item in the list
+            duration = 400;
+        }
+        TranslateAnimation animate = new TranslateAnimation(0,0,0,0);
+        animate.setDuration(duration);
+        background.startAnimation(animate);
+        background.setVisibility(View.GONE);
     }
 
     /**
@@ -138,6 +157,22 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             }
         });
         notifyDataSetChanged();
+    }
+
+    /**
+     * Displays the underlying background when an item is swiped. The background will remain
+     * displayed in the same position until a different item is swiped. This seems acceptable because
+     * only one item can be swiped at a time.
+     * @param top (int) - Position where the top of the swipe background will be displayed
+     * @param width (int) - Width of the desired swipe background
+     * @param height (int) - Height of the desired swipe background
+     */
+    @Override
+    public void displaySwipeBackground(int top, int width, int height) {
+        background.setY(top);
+        background.setX(0);
+        background.setLayoutParams(new FrameLayout.LayoutParams(width, height));
+        background.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -210,6 +245,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             // Used for indicating the last attempted cleared item
             //itemView.setBackgroundColor(0);
         }
+
 
         private void updateTask(Context context, TaskWrapper taskWrapper) {
             DatabaseHandler db = new DatabaseHandler(context);
