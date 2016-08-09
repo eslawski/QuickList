@@ -6,7 +6,7 @@
 2) Give the task some upvotes, why not.  
 3) Make more tasks!  
 4) Sort the tasks to reorganize them by priority  
-5) Close the app and comeback later to add more task or revaluate priorities. 
+5) Close the app and comeback later to add more task or revaluate priorities.  
 6) Swipe tasks away when you complete them!  
 ![](https://github.com/eslawski/QuickList/blob/master/screenshot_main.png)
 
