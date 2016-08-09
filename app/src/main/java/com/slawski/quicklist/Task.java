@@ -1,57 +1,99 @@
 package com.slawski.quicklist;
+//EVAN COMP
 
-// Contract class for a Task object that will be stored in the database
+/**
+ * Class that defines was a Task consist of.
+ */
 public class Task {
 
-    // Private variables
+    /**
+     * Id of the task.
+     */
     int _id;
+
+    /**
+     * Description of the task.
+     */
     String _taskDescription;
+
+    /**
+     * Number of votes for the task.
+     */
     int _votes;
 
-    // Empty Constructor
+    /**
+     * Empty Constructor
+     */
     public Task() {
 
     }
 
-    // Constructor for new Task object
+    /**
+     * Constructor for a new task with an id.
+     * @param id id of the task
+     * @param taskDescription description of the task
+     * @param votes number of votes for the task
+     */
     public Task(int id, String taskDescription, int votes) {
         this._id = id;
         this._taskDescription = taskDescription;
         this._votes = votes;
     }
 
-    // Constructor for new Task object
+    /**
+     * Constructor for a new task without an id
+     * @param taskDescription description of the task
+     * @param votes number of votes
+     */
     public Task(String taskDescription, int votes) {
         this._taskDescription = taskDescription;
         this._votes = votes;
     }
 
-    // Getter for id variable
+    /**
+     * Gets the Id of the task
+     * @return id of the task
+     */
     public int getID() {
         return this._id;
     }
 
-    // Setter for id variable
+    /**
+     * Sets the Id of the task
+     * @param id id for the task
+     */
     public void setID(int id) {
         this._id = id;
     }
 
-    // Getter for taskDescription variable
+    /**
+     * Gets the description of the task
+     * @return description of the task
+     */
     public String getTaskDescription() {
         return this._taskDescription;
     }
 
-    // Setter for taskDescription variable
+    /**
+     * Sets the description of the task
+     * @param taskDescription description for the task
+     */
     public void setTaskDescription(String taskDescription) {
         this._taskDescription = taskDescription;
     }
 
-    // Getter for votes variable
+    /**
+     * Gets the number of votes for the task.
+     * @return number of votes for the task
+     */
     public int getVotes() {
         return this._votes;
     }
 
-    // Setter for votes variable
+    /**
+     * Sets the number of votes for the task.
+     * @param votes number of votes for the task
+     */
     public void setVotes(int votes) {
         this._votes = votes;
     }

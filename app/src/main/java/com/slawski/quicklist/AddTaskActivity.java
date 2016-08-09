@@ -15,7 +15,11 @@ import android.widget.EditText;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+//EVAn COMP
 
+/**
+ * Activity for adding a new task.
+ */
 public class AddTaskActivity extends AppCompatActivity {
 
     Calendar myCalendar;
@@ -27,6 +31,9 @@ public class AddTaskActivity extends AppCompatActivity {
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        /**
+         * Setup the calendar that will be used for the due date field.
+         */
         myCalendar = Calendar.getInstance();
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -39,6 +46,9 @@ public class AddTaskActivity extends AppCompatActivity {
         };
 
         EditText dateInput = (EditText) findViewById(R.id.datePickerTest);
+
+        // Listen on focus change for the date field because listening on the click for some reason
+        // requires two clicks events.
         dateInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
@@ -53,6 +63,7 @@ public class AddTaskActivity extends AppCompatActivity {
             }
         });
 
+        // Setup the task description input field.
         EditText taskDescription =(EditText) findViewById(R.id.taskDescriptionField);
         if(taskDescription.requestFocus()) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
@@ -60,17 +71,18 @@ public class AddTaskActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Called when the back button or "ADD TASK" action item is selected. If the back buton was
+     * selected finish the activity without sending result back. If the "ADD TASK" button is
+     * selected sent the task description back.
+     * @param item item
+     */
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
 
         if(id == android.R.id.home) {
             finish();
         } else if(id == R.id.action_add_task) {
-            DatabaseHandler db = new DatabaseHandler(this);
-            //TODO 1) add error handling (i.e. empty task)
-            //TODO 2) add support for the due date for the database
-            //TODO 3) send back the result of add task so it can be appended to the adapter
-            //TODO 4) figure out a better way to create ids
             EditText taskDescription = (EditText) findViewById(R.id.taskDescriptionField);
             Intent i = new Intent();
             i.putExtra("task", taskDescription.getText().toString());
@@ -81,15 +93,23 @@ public class AddTaskActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Create the options menu.
+     * @param menu menu
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_add_task, menu);
         return true;
     }
 
+    /**
+     * Date selection handler that updates the due date text box with the date selected
+     * by the calendar view.
+     */
     private void updateDueDateTextBox() {
         EditText dateInput = (EditText) findViewById(R.id.datePickerTest);
-        String myFormat = "MM/dd/yy"; //In which you need put here
+        String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         dateInput.setText(sdf.format(myCalendar.getTime()));
     }

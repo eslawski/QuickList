@@ -1,4 +1,5 @@
 package com.slawski.quicklist;
+//EVAN COMP - rename to DatabaseHelper, database connections can be singleton, close cursor
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,30 +11,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO: remove tutorial link
- * Following the tutorial at http://www.androidhive.info/2011/11/android-sqlite-database-tutorial/
- * Create a database capable of storing user entered tasks following CRUD standards.
- * There were some issues with the tutorial I followed.
- * TODO: avoid opening a new read/writable database for every query.
+ * Create database helper class that follows the CRUD model. There are currently two tables
+ *
+ *      1) "tasks" - A table that stores all information relating to a task.
+ *      2) "recordId" - A table that stores an auto-incremented integer that acts as the system
+ *                      record id to provide all new tasks with a unique id.
  */
-//TODO could also be called a database helper (see http://javarticles.com/2015/06/android-simplecursoradapter-example.html)
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    // Version of the database. Must increment this when schema is changed.
+    /**
+     * Version of the database. Must increment this when schema is changed.
+     */
     private static final int DATABASE_VERSION = 8;
 
-    // Name of the database
+    /**
+     * Name of the database.
+     */
     public static final String DATABASE_NAME = "tasksDB";
 
-    // Name of the one and only table (so far) in the database.
+    /**
+     * Names of the tables within the database.
+     */
     public static final String TABLE_TASKS = "tasks";
     public static final String TABLE_RECORD_ID = "recordId";
 
-    // Column names
-    public static final String KEY_ID = "_id"; //doubles as column in record id table
+    /**
+     * Names of the columns within the "tasks" table.
+     */
+    public static final String KEY_ID = "_id";
     public static final String KEY_TASK_DESCRIPTION = "taskDescription";
     public static final String KEY_VOTES = "votes";
 
+    /**
+     * Constructor
+     * @param context context
+     */
     public DatabaseHandler(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -72,6 +84,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /**
+     * Gets the latest record id from the "recordId" table. This function is used to help assign
+     * a unique integer to each task that gets added.
+     * @return The latest record id
+     */
     public int getRecordId() {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT MAX(" + KEY_ID + ") as id FROM " + TABLE_RECORD_ID;
@@ -88,7 +105,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Adds a new task to the TASKS table of the database.
+     * Adds a new task to the "tasks" table of the database.
      * @param task The task to add.
      */
     public void addTask(Task task) {
@@ -102,7 +119,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         db.insert(TABLE_TASKS, null, values);
 
-        // Increment the record id
+        // Increment the record id of the "recordId" table
         ContentValues values1 = new ContentValues();
         values1.put(KEY_ID, task.getID()+1);
         db.update(TABLE_RECORD_ID, values1, null, null);
@@ -124,7 +141,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
         }
 
-        //TODO: determine why you need to use the getString method.
         Task task = new Task(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1), Integer.parseInt(cursor.getString(2)));
 
@@ -174,7 +190,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     /**
      * Update the provided task in the database. Returns the id of the updated task.
-     * TODO: determine if this is a useful feature
      * @param task The task to update
      */
     public int updateTask(Task task){

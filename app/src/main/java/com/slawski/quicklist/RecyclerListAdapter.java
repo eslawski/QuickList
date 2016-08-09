@@ -1,7 +1,5 @@
 package com.slawski.quicklist;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -18,27 +16,40 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+//EVAN COMP
 
 /**
- * Adapter for our recycler view to display tasksWrappers.
+ * Adapter for the RecyclerView that will display the tasks.
  */
 public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapter.ItemViewHolder>
         implements ItemTouchHelperAdapter {
 
-    // Private variable that stores all the tasksWrappers to be displayed.
+    /**
+     * Private variable that stores all the tasksWrappers to be displayed.
+     */
     private List<TaskWrapper> tasksWrappers = new ArrayList<>();
 
-    // Stores the context for database purposes. Not the best solution here because the adapter
-    // should not be manipulating the data.
+    /**
+     * Stores the context for database purposes.
+     * TODO Not the best solution here because the adapter should not be manipulating the data
+     * TODO however there currently no API support for a CursorAdapter with a RecyclerView.
+     */
     private Context context;
 
-    // Reference to the background that displays behinds swipe tasks.
+    /**
+     * Reference to a FrameLayout which will be drawn behind the currently swiped task (if any) to
+     * create a cool "background" effect while in progress. The background will only be visible if
+     * the user is currently touching the task while mid-swipe. If a task is swiped away, it will
+     * be animated to stay visible for a short amount of time. Otherwise the background is hidden.
+     */
     private FrameLayout background;
 
     /**
-     * Constructor
+     * Constructor for this class
+     * @param context Context
+     * @param taskWrappers The list of TaskWrappers to display
+     * @param background FrameLayout that will act as the 'swipe background'
      */
     RecyclerListAdapter(Context context, List<TaskWrapper> taskWrappers, FrameLayout background) {
         this.tasksWrappers = taskWrappers;
@@ -47,32 +58,23 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     }
 
     /**
-     * Method from ItemTouchHelperAdapter
      * Dragging is disabled for now.
-     * @param fromPosition
-     * @param toPosition
+     * @param fromPosition from position
+     * @param toPosition to position
      */
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
-//        if (fromPosition < toPosition) {
-//            for (int i = fromPosition; i < toPosition; i++) {
-//                Collections.swap(mItems, i, i + 1);
-//            }
-//        } else {
-//            for (int i = fromPosition; i > toPosition; i--) {
-//                Collections.swap(mItems, i, i - 1);
-//            }
-//        }
-//        notifyItemMoved(fromPosition, toPosition);
-//        return true;
+        //TODO: Implement dragging if necessary
     }
 
     /**
-     * Method from ItemTouchHelperAdapter
-     * @param position
+     * Invoked when a swipe is completed. Open up a new database connection and delete the task that
+     * was swiped while also removing it from the list. Also animate the 'swipe background' such
+     * that it stays in view momentarily after the task has been swiped.
+     * @param position Position at which the swipe was completed
      */
     @Override
-    public void onItemDismiss(int position) {
+    public void onSwipeCompleted(int position) {
         animateSwipeBackgroundOut(position);
         DatabaseHandler db = new DatabaseHandler(context);
         db.deleteTask(tasksWrappers.get(position).getTask());
@@ -81,9 +83,9 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     }
 
     /**
-     * Allows the swipe background display for a short amount of time after and item is swiped.
+     * Allows the swipe background display for a short amount of time after a task is swiped.
      * This adds a nice UI effect leaving the background behind as the list re-sizes itself.
-     * @param position
+     * @param position Position at which the background will be animated out
      */
     public void animateSwipeBackgroundOut(int position) {
         // Give the background a second to dismiss. Not quite the best way to do this.
@@ -99,10 +101,11 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     }
 
     /**
-     * Method from RecyclerView.Adapter
-     * @param parent
-     * @param viewType
-     * @return
+     * Called when the RecyclerViewer needs a new ViewHolder to represent a new item in the list.
+     * Inflate the xml that will be used to draw each task in the list.
+     * @param parent ViewGroup
+     * @param viewType ViewType
+     * @return The new ViewHolder to use
      */
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -112,9 +115,11 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     }
 
     /**
-     * Method from RecyclerView.Adapter
-     * @param holder
-     * @param position
+     * Called when the RecyclerView needs to display an item at the specified position. This can either
+     * be when the item is first create or when it is changed via one of the 'notify*' methods. This
+     * method gets called as tasks are upvoted/downvoted and handles all UI related tasks.
+     * @param holder ViewHolder to update
+     * @param position Position of the ViewHolder
      */
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
@@ -124,15 +129,10 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         holder.textView.setText(task.getTaskDescription());
         holder.voteCountTextView.setText(String.valueOf(task.getVotes()));
 
+        // Android does some weird thing with caching drawables. The workaround for this was
+        // to make the drawables 'mutable' so they are not preserved in cache.
         Drawable upvoteDrawable = holder.upvote.getDrawable().mutate();
         Drawable downvoteDrawable = holder.downvote.getDrawable().mutate();
-
-        // Sometimes if a swipe is not fully completed it will leave the 'thumbs up' background
-        // drawn behind the list. Then when the upvote/downvote button is clicked the list item is
-        // redrawn which briefly shows the underlying 'thumbs up' background. This is a poor hack
-        // to get the background to disappear right before the list item is redrawn.
-        // TODO: Find a better way to listen for cancel swipes and handle this in the ItemTouchCallbackHelper
-        background.setVisibility(View.GONE);
 
         if(taskWrapper.getIsUpvoted()) {
             upvoteDrawable.setColorFilter(Color.parseColor("#FF8B60"), PorterDuff.Mode.MULTIPLY);
@@ -150,6 +150,9 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
 
     }
 
+    /**
+     * Sorts the task in the RecyclerView
+     */
     public void sortTasks() {
         Collections.sort(tasksWrappers, new Comparator<TaskWrapper>() {
             public int compare(TaskWrapper taskWrapper1, TaskWrapper taskWrapper2) {
@@ -160,15 +163,14 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     }
 
     /**
-     * Displays the underlying background when an item is swiped. The background will remain
-     * displayed in the same position until a different item is swiped. This seems acceptable because
-     * only one item can be swiped at a time.
-     * @param top (int) - Position where the top of the swipe background will be displayed
-     * @param width (int) - Width of the desired swipe background
-     * @param height (int) - Height of the desired swipe background
+     * Called when a task is actively being swiped (user is touching it). Display the underlying
+     * 'swipe background' at the specified position.
+     * @param top Position where the top of the swipe background will be displayed
+     * @param width Width of the desired swipe background
+     * @param height Height of the desired swipe background
      */
     @Override
-    public void displaySwipeBackground(int top, int width, int height) {
+    public void onSwipeInProgress(int top, int width, int height) {
         background.setY(top);
         background.setX(0);
         background.setLayoutParams(new FrameLayout.LayoutParams(width, height));
@@ -176,14 +178,28 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     }
 
     /**
-     * Method from RecyclerView.Adapter
-     * @return
+     * Called if a user cancels their swipe and it returns to it's original position. Hide the 'swipe
+     * background'.
+     */
+    @Override
+    public void onSwipeCanceled() {
+        background.setVisibility(View.GONE);
+    }
+
+    /**
+     * Gets the number of items in the RecyclerView. Override required by RecyclerView.Adapter.
      */
     @Override
     public int getItemCount() {
         return tasksWrappers.size();
     }
 
+    /**
+     * Creates a new task given the task description and ads it to the database/list. Again
+     * this is not the best place to be performing database operations, but it is a workaround to
+     * the fact that RecyclerViews do not support CursorAdapters.
+     * @param taskDescription
+     */
     public void addTask(String taskDescription) {
         DatabaseHandler db = new DatabaseHandler(context);
         int nextRecordId = db.getRecordId()+1;
@@ -193,19 +209,28 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         notifyItemInserted(this.tasksWrappers.size()-1);
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder implements
-            ItemTouchHelperViewHolder {
+    /**
+     * A RecyclerView consists of a list of 'ViewHolders' each holding one 'View' which represents
+     * each row (task). A 'ViewHolder' provides a way to interact with the individual elements of
+     * each view that gets created. For example, this is where the upvote/downvote click listeners
+     * are implemented.
+     */
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        public final TextView textView;
+        public TextView textView;
         public ImageButton upvote;
         public ImageButton downvote;
         public TextView voteCountTextView;
 
+        /**
+         * Constructor for this class
+         * @param itemView View that will be held by this ViewHolder
+         */
         public ItemViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.list_task_description);
 
-            // Hook up the click events for the voting buttons
+            // Hook up the click events for the upvote/downvote buttons
             upvote = (ImageButton) itemView.findViewById(R.id.upArrow);
             downvote = (ImageButton) itemView.findViewById(R.id.downArrow);
             voteCountTextView = (TextView) itemView.findViewById(R.id.voteCounter);
@@ -234,19 +259,13 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             });
         }
 
-        @Override
-        public void onItemSelected() {
-            // Used for indicating which row is selected
-            //itemView.setBackgroundColor(Color.LTGRAY);
-        }
-
-        @Override
-        public void onItemClear() {
-            // Used for indicating the last attempted cleared item
-            //itemView.setBackgroundColor(0);
-        }
-
-
+        /**
+         * Called when a task gets upvoted/downvoted. Open up a database connection and update
+         * the task as needed. Again this is not the best place to be performing database
+         * operations. Also notify the adapter of the item that changed so it can rebound.
+         * @param context context
+         * @param taskWrapper The task wrapper
+         */
         private void updateTask(Context context, TaskWrapper taskWrapper) {
             DatabaseHandler db = new DatabaseHandler(context);
             Task task = taskWrapper.getTask();
