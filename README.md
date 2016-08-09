@@ -8,7 +8,7 @@
 4) Sort the tasks to reorganize them by priority  
 5) Close the app and comeback later to add more task or revaluate priorities. 
 6) Swipe tasks away when you complete them!  
-![]()![](http://umich.edu/skins/um2013/media/images/touch-icon-ipad-retina.png)
+![](https://github.com/eslawski/QuickList/blob/master/screenshot_main.png)
 
 **Background**  
 I once thought that when I graduated college my TODO lists would finally shrink. I could not have been more wrong. Just having a full time job and trying to plan a wedding I have easily tripled my largest of TODO lists. Instead of post-its everywhere or a messy google doc of tasks, I decided to get my feet wet again with Android.
