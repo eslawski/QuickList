@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         // Setup the RecyclerView that will display all the tasks.
         FrameLayout background = (FrameLayout) findViewById(R.id.swipe_bg);
         adapter = new RecyclerListAdapter(this, taskWrappers, background);
+        adapter.sortTasks();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setNestedScrollingEnabled(true);
         recyclerView.setAdapter(adapter);
