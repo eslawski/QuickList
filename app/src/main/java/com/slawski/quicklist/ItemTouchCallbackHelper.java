@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
-//EVAN COMP
 
 /**
  * Class that captures various UI interactions with the RecyclerView and its views.

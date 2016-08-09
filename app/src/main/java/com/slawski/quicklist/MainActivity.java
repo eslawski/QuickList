@@ -13,9 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.slawski.quicklist.Database.DatabaseHelper;
+
 import java.util.ArrayList;
 import java.util.List;
-//EVAN COMP
 
 /**
  * MainActivity for the application
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
      * Queries the database for all tasks.
      */
     public List<Task> getAllTasks() {
-        DatabaseHandler db = new DatabaseHandler(this);
+        DatabaseHelper db = new DatabaseHelper(this);
         return db.getAllTasks();
     }
 }

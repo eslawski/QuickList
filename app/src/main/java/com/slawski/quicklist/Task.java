@@ -1,5 +1,4 @@
 package com.slawski.quicklist;
-//EVAN COMP
 
 /**
  * Class that defines was a Task consist of.

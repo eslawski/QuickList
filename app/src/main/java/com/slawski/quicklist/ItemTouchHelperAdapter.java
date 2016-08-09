@@ -1,5 +1,4 @@
 package com.slawski.quicklist;
-//EVAN COMP
 
 /**
  * Interface that allows us to plug into certain user interactions controlled by ItemTouchCallbackHelper.

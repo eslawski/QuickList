@@ -1,11 +1,12 @@
-package com.slawski.quicklist;
-//EVAN COMP - rename to DatabaseHelper, database connections can be singleton, close cursor
+package com.slawski.quicklist.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.slawski.quicklist.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  *      2) "recordId" - A table that stores an auto-incremented integer that acts as the system
  *                      record id to provide all new tasks with a unique id.
  */
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Version of the database. Must increment this when schema is changed.
@@ -46,7 +47,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Constructor
      * @param context context
      */
-    public DatabaseHandler(Context context){
+    public DatabaseHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -137,13 +138,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_TASKS, new String[] {KEY_TASK_DESCRIPTION},
                 KEY_ID + "=?", new String[] {String.valueOf(id)}, null, null, null, null);
 
+        Task task = null;
         if(cursor != null) {
             cursor.moveToFirst();
+            task = new Task(Integer.parseInt(cursor.getString(0)),
+                    cursor.getString(1), Integer.parseInt(cursor.getString(2)));
+            cursor.close();
         }
-
-        Task task = new Task(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), Integer.parseInt(cursor.getString(2)));
-
         db.close();
         return task;
     }
@@ -168,8 +169,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 taskList.add(task);
             } while(cursor.moveToNext());
         }
-        // TODO: close the cursor?
 
+        cursor.close();
         db.close();
         return taskList;
     }

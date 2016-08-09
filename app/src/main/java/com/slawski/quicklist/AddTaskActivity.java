@@ -15,7 +15,6 @@ import android.widget.EditText;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-//EVAn COMP
 
 /**
  * Activity for adding a new task.

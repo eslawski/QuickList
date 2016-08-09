@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-//EVAN COMP
 
 /**
  * Who knew adding dividers was so complex. I used this example:

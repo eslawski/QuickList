@@ -1,5 +1,4 @@
 package com.slawski.quicklist;
-//EVAN COMP
 
 
 import android.content.Context;

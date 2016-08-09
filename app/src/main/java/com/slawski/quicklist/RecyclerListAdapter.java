@@ -13,11 +13,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.slawski.quicklist.Database.DatabaseHelper;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-//EVAN COMP
 
 /**
  * Adapter for the RecyclerView that will display the tasks.
@@ -76,7 +77,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     @Override
     public void onSwipeCompleted(int position) {
         animateSwipeBackgroundOut(position);
-        DatabaseHandler db = new DatabaseHandler(context);
+        DatabaseHelper db = new DatabaseHelper(context);
         db.deleteTask(tasksWrappers.get(position).getTask());
         tasksWrappers.remove(position);
         notifyItemRemoved(position);
@@ -201,7 +202,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
      * @param taskDescription
      */
     public void addTask(String taskDescription) {
-        DatabaseHandler db = new DatabaseHandler(context);
+        DatabaseHelper db = new DatabaseHelper(context);
         int nextRecordId = db.getRecordId()+1;
         Task newTask = new Task(nextRecordId, taskDescription, 0);
         db.addTask(newTask);
@@ -267,7 +268,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
          * @param taskWrapper The task wrapper
          */
         private void updateTask(Context context, TaskWrapper taskWrapper) {
-            DatabaseHandler db = new DatabaseHandler(context);
+            DatabaseHelper db = new DatabaseHelper(context);
             Task task = taskWrapper.getTask();
             db.updateTask(task);
             voteCountTextView.setText(String.valueOf(task.getVotes()));
