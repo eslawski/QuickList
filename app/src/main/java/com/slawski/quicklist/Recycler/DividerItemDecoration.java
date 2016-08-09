@@ -1,10 +1,12 @@
-package com.slawski.quicklist;
+package com.slawski.quicklist.Recycler;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.slawski.quicklist.R;
 
 /**
  * Who knew adding dividers was so complex. I used this example:

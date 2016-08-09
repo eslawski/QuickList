@@ -1,4 +1,4 @@
-package com.slawski.quicklist;
+package com.slawski.quicklist.Recycler;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -14,6 +14,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.slawski.quicklist.Database.DatabaseHelper;
+import com.slawski.quicklist.Models.Task;
+import com.slawski.quicklist.Models.TaskWrapper;
+import com.slawski.quicklist.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +55,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
      * @param taskWrappers The list of TaskWrappers to display
      * @param background FrameLayout that will act as the 'swipe background'
      */
-    RecyclerListAdapter(Context context, List<TaskWrapper> taskWrappers, FrameLayout background) {
+    public RecyclerListAdapter(Context context, List<TaskWrapper> taskWrappers, FrameLayout background) {
         this.tasksWrappers = taskWrappers;
         this.context = context;
         this.background = background;

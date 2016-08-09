@@ -1,4 +1,4 @@
-package com.slawski.quicklist;
+package com.slawski.quicklist.Recycler;
 
 /**
  * Interface that allows us to plug into certain user interactions controlled by ItemTouchCallbackHelper.

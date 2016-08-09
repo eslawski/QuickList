@@ -1,4 +1,4 @@
-package com.slawski.quicklist;
+package com.slawski.quicklist.Models;
 
 /**
  * This class wraps a task along with a 'deltaVote' integer to provide an in memory object that the

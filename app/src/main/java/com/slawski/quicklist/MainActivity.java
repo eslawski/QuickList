@@ -14,6 +14,10 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.slawski.quicklist.Database.DatabaseHelper;
+import com.slawski.quicklist.Models.Task;
+import com.slawski.quicklist.Models.TaskWrapper;
+import com.slawski.quicklist.Recycler.ItemTouchCallbackHelper;
+import com.slawski.quicklist.Recycler.RecyclerListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

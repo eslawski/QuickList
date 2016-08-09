@@ -1,4 +1,4 @@
-package com.slawski.quicklist;
+package com.slawski.quicklist.Models;
 
 /**
  * Class that defines was a Task consist of.
