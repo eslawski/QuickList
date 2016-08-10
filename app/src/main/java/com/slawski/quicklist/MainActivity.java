@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.slawski.quicklist.Database.DatabaseHelper;
 import com.slawski.quicklist.Models.Task;
@@ -48,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         adapter = new RecyclerListAdapter(this, taskWrappers, background);
         adapter.sortTasks();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setNestedScrollingEnabled(true);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         ItemTouchHelper.Callback callback = new ItemTouchCallbackHelper(adapter);
@@ -70,6 +70,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+
+
+        LinearLayout emptyText = (LinearLayout) findViewById(R.id.empty_tasks);
+        if(adapter.getItemCount() <= 0) {
+            emptyText.setVisibility(View.VISIBLE);
+        } else {
+            emptyText.setVisibility(View.GONE);
+        }
 
     }
 
