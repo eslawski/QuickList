@@ -34,13 +34,6 @@
         android:paddingTop="20dp"
         android:visibility="gone">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="There are no tasks to display!"
-            android:textSize="18sp"
-            android:layout_gravity="center"/>
-
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

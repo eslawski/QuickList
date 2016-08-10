@@ -71,14 +71,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        LinearLayout emptyText = (LinearLayout) findViewById(R.id.empty_tasks);
-        if(adapter.getItemCount() <= 0) {
-            emptyText.setVisibility(View.VISIBLE);
-        } else {
-            emptyText.setVisibility(View.GONE);
-        }
-
     }
 
     /**
