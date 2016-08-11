@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup the RecyclerView that will display all the tasks.
         FrameLayout background = (FrameLayout) findViewById(R.id.swipe_bg);
-        adapter = new RecyclerListAdapter(this, taskWrappers, background);
+        FrameLayout emptyText = (FrameLayout) findViewById(R.id.empty_tasks);
+        adapter = new RecyclerListAdapter(this, taskWrappers, background, emptyText);
         adapter.sortTasks();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setAdapter(adapter);
@@ -70,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+
+        // Display the empty text initially if needed
+        if(adapter.getItemCount() <= 0) {
+            emptyText.setVisibility(View.VISIBLE);
+        }
 
     }
 

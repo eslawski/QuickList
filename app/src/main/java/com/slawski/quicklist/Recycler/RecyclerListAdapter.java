@@ -51,15 +51,23 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     private FrameLayout background;
 
     /**
+     * Reference to a FrameLayout which will display when there are no tasks to show in the list.
+     */
+    private FrameLayout emptyText;
+
+    /**
      * Constructor for this class
      * @param context Context
      * @param taskWrappers The list of TaskWrappers to display
      * @param background FrameLayout that will act as the 'swipe background'
+     * @param emptyText FrameLayout that will be displayed when there are no tasks in the list.
      */
-    public RecyclerListAdapter(Context context, List<TaskWrapper> taskWrappers, FrameLayout background) {
+    public RecyclerListAdapter(Context context, List<TaskWrapper> taskWrappers,
+                               FrameLayout background, FrameLayout emptyText) {
         this.tasksWrappers = taskWrappers;
         this.context = context;
         this.background = background;
+        this.emptyText = emptyText;
     }
 
     /**
@@ -85,6 +93,9 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         db.deleteTask(tasksWrappers.get(position).getTask());
         tasksWrappers.remove(position);
         notifyItemRemoved(position);
+        if(getItemCount() <= 0 ) {
+            emptyText.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -210,6 +221,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         int nextRecordId = db.getRecordId()+1;
         Task newTask = new Task(nextRecordId, taskDescription, 0);
         db.addTask(newTask);
+        emptyText.setVisibility(View.GONE);
         this.tasksWrappers.add(new TaskWrapper(newTask));
         notifyItemInserted(this.tasksWrappers.size()-1);
     }
