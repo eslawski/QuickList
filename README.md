@@ -17,7 +17,7 @@ As you become an adult time becomes more precious. Bottom line, you don't have t
 
 
 
-Got too many tasks? Concerned about performance? Not to worry, I learned all about the RecyclerViewer. The RecyclerViewer renders content to the screen as you scroll. This way you are not bogged down by trying to bind all those views for EVERY task in your list. The android API also provides some great helper classes with callbacks for interacting with the RecyclerView. Check it out for yourself! Find the most recent apk [here](https://github.com/eslawski/QuickList/blob/master/Quicklist.apk)
+Got too many tasks? Concerned about performance? Not to worry, I learned all about the RecyclerViewer. The RecyclerViewer renders content to the screen as you scroll. This way you are not bogged down by trying to bind all those views for EVERY task in your list. The android API also provides some great helper classes with callbacks for interacting with the RecyclerView. Check it out for yourself! Find the most recent stable apk [here](https://github.com/eslawski/QuickList/blob/master/Quicklist.apk)
 
 **Future Update Ideas**
 - Implement the concept of a due date. Also allow for sorting of tasks by due date.
