@@ -23,3 +23,4 @@ Got too many tasks? Concerned about performance? Not to worry, I learned all abo
 - Implement the concept of a due date. Also allow for sorting of tasks by due date.
 - Support multiple lists
 - Enable list sharing to share tasks with friends/family
+- Be able to search/filter tasks based on user input
